@@ -145,35 +145,69 @@ function combinations(items, size) {
   return results;
 }
 function plannerRoutes(target) {
-  const items = plannerItems().slice(0, 18);
+  const items = plannerItems().slice(0, 6);
   if (!items.length) return [];
   const routeMap = new Map();
   const maxRouteSize = Math.min(3, items.length);
+  const addRoute = (parts, total) => {
+    if (total < target) return;
+    const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
+    const over = total - target;
+    if (!routeMap.has(key) || routeMap.get(key).over > over) {
+      routeMap.set(key, { parts, total, over, itemCount: plannerRouteItemCount(parts) });
+    }
+  };
   for (let routeSize = 1; routeSize <= maxRouteSize; routeSize++) {
     combinations(items, routeSize).forEach(combo => {
-      const counts = new Array(combo.length).fill(0);
-      const maxCounts = combo.map(item => Math.max(0, Math.ceil(target / item.value)));
-      const walk = (index, currentTotal) => {
-        if (index === combo.length) {
-          if (currentTotal < target) return;
-          const parts = combo.map((item, partIndex) => ({ name: item.name, count: counts[partIndex] })).filter(part => part.count > 0);
-          if (!parts.length) return;
-          const total = parts.reduce((sum, part) => sum + (items.find(item => item.name === part.name)?.value || 0) * part.count, 0);
-          const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
-          const over = total - target;
-          if (!routeMap.has(key) || routeMap.get(key).over > over) {
-            routeMap.set(key, { parts, total, over, itemCount: plannerRouteItemCount(parts) });
+      const ordered = [...combo].sort((a, b) => b.value - a.value);
+      if (ordered.length === 1) {
+        const item = ordered[0];
+        const maxCount = Math.min(5000, Math.max(1, Math.ceil(target / item.value)));
+        for (let count = 1; count <= maxCount; count++) {
+          const total = count * item.value;
+          if (total >= target) addRoute([{ name: item.name, count }], total);
+        }
+        return;
+      }
+      if (ordered.length === 2) {
+        const [first, second] = ordered;
+        const maxFirst = Math.min(5000, Math.max(1, Math.ceil(target / first.value)));
+        for (let countA = 0; countA <= maxFirst; countA++) {
+          const totalA = countA * first.value;
+          if (totalA >= target) {
+            addRoute([{ name: first.name, count: countA }, { name: second.name, count: 0 }], totalA);
+            continue;
           }
-          return;
+          const countB = Math.max(0, Math.ceil((target - totalA) / second.value));
+          const total = totalA + (countB * second.value);
+          if (total >= target) {
+            addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }], total);
+          }
         }
-        const item = combo[index];
-        const safeMax = Math.max(0, Math.min(maxCounts[index], target ? Math.ceil((target - currentTotal) / item.value) : 0));
-        for (let count = 0; count <= safeMax; count++) {
-          counts[index] = count;
-          walk(index + 1, currentTotal + (count * item.value));
+        return;
+      }
+      const [first, second, third] = ordered;
+      const maxFirst = Math.min(300, Math.max(1, Math.ceil(target / first.value)));
+      const maxSecond = Math.min(300, Math.max(1, Math.ceil(target / second.value)));
+      for (let countA = 0; countA <= maxFirst; countA++) {
+        const totalA = countA * first.value;
+        if (totalA >= target) {
+          addRoute([{ name: first.name, count: countA }, { name: second.name, count: 0 }, { name: third.name, count: 0 }], totalA);
+          continue;
         }
-      };
-      walk(0, 0);
+        for (let countB = 0; countB <= maxSecond; countB++) {
+          const totalB = totalA + (countB * second.value);
+          if (totalB >= target) {
+            addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }, { name: third.name, count: 0 }], totalB);
+            continue;
+          }
+          const countC = Math.max(0, Math.ceil((target - totalB) / third.value));
+          const total = totalB + (countC * third.value);
+          if (total >= target) {
+            addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }, { name: third.name, count: countC }], total);
+          }
+        }
+      }
     });
   }
   return [...routeMap.values()].sort((a, b) => a.over - b.over || a.itemCount - b.itemCount || a.total - b.total).slice(0, 8);
@@ -189,6 +223,28 @@ function plannerFilterSort(items) {
   ]);
   return items.sort((a, b) => (priority.get(a.name) ?? 100) - (priority.get(b.name) ?? 100) || a.name.localeCompare(b.name));
 }
+function andyTradePreset() {
+  const wanted = new Set([
+    'T6 material set',
+    'Glob of Ectoplasm',
+    'Mystic Coin',
+    'Amalgamated Draconic Lodestone',
+    'Amalgamated Gemstone',
+    'Antique Summoning Stone',
+    'Chunk of Pure Jade',
+    'Gift of Condensed Might',
+    'Gift of Condensed Magic',
+    'Jade Runestone',
+    'Memory of Battle',
+    'Shard of Glory',
+    'Stabilizing Matrix'
+  ]);
+  plannerExcluded.clear();
+  plannerItems(true).forEach(item => {
+    const key = plannerItemKey(item);
+    if (!wanted.has(item.name)) plannerExcluded.add(key);
+  });
+}
 function plannerRouteItemCount(parts) {
   return (parts || []).reduce((total, part) => {
     const isTMaterialSet = /^T[3-6] material set$/i.test(part.name);
@@ -201,7 +257,9 @@ function routeItems(route) {
 function planner() {
   const target = 1000;
   const filterItems = plannerFilterSort(plannerItems(true));
-  app.innerHTML = `<section class="quote-page"><p class="eyebrow">Piixel tool · live market values</p><h1>Turn gold into<br><em>a route.</em></h1><p class="hero-copy" style="margin-top:26px">Enter a target and compare practical ways to reach it using every currently priced resource. Routes use 90% direct-trade value, then favor the least over-target amount.</p><div class="planner-controls"><label for="gold-target">Target gold</label><div class="search-wrap"><span class="search-icon">◎</span><input id="gold-target" type="number" min="1" step="1" value="${target}" aria-label="Target gold"></div><span class="section-note">Values use the latest available API snapshot.</span></div><div class="planner-filter"><div class="section-heading"><div><p class="eyebrow">Choose your inputs</p><h2>Include items</h2></div><div><span class="section-note">Uncheck anything you do not want to use</span><div class="filter-actions"><button class="btn" id="planner-check-all" type="button">Check all</button><button class="btn" id="planner-uncheck-all" type="button">Uncheck all</button></div></div></div><div class="planner-checks">${filterItems.map(item => `<label><input type="checkbox" data-planner-item="${plannerItemKey(item)}" ${plannerExcluded.has(plannerItemKey(item)) ? '' : 'checked'}><span>${item.name}</span></label>`).join('')}</div></div><div id="planner-results"></div></section>`;
+  plannerExcluded.clear();
+  filterItems.forEach(item => plannerExcluded.add(plannerItemKey(item)));
+  app.innerHTML = `<section class="quote-page"><p class="eyebrow">Piixel tool · live market values</p><h1>Turn gold into<br><em>a route.</em></h1><p class="hero-copy" style="margin-top:26px">Enter a target and compare practical ways to reach it using every currently priced resource. Routes use 90% direct-trade value, then favor the least over-target amount.</p><div class="planner-controls"><label for="gold-target">Target gold</label><div class="search-wrap"><span class="search-icon">◎</span><input id="gold-target" type="number" min="1" step="1" value="${target}" aria-label="Target gold"></div><span class="section-note">Values use the latest available API snapshot.</span></div><div class="planner-filter"><div class="section-heading"><div><p class="eyebrow">Choose your inputs</p><h2>Include items</h2></div><div><span class="section-note">Uncheck anything you do not want to use</span><div class="filter-actions"><button class="btn" id="planner-check-all" type="button">Check all</button><button class="btn" id="planner-uncheck-all" type="button">Uncheck all</button><button class="btn" id="planner-andy-trade" type="button">Andy Trade</button></div></div></div><div class="planner-checks">${filterItems.map(item => `<label><input type="checkbox" data-planner-item="${plannerItemKey(item)}" ${plannerExcluded.has(plannerItemKey(item)) ? '' : 'checked'}><span>${item.name}</span></label>`).join('')}</div></div><div id="planner-results"></div></section>`;
   const update = () => {
     const amount = Math.max(1, Number(document.querySelector('#gold-target').value) || target);
     const routes = plannerRoutes(amount);
@@ -210,6 +268,14 @@ function planner() {
   document.querySelector('#gold-target').addEventListener('input', update);
   document.querySelector('#planner-check-all').addEventListener('click', () => { plannerExcluded.clear(); document.querySelectorAll('[data-planner-item]').forEach(input => { input.checked = true; }); update(); });
   document.querySelector('#planner-uncheck-all').addEventListener('click', () => { filterItems.forEach(item => plannerExcluded.add(plannerItemKey(item))); document.querySelectorAll('[data-planner-item]').forEach(input => { input.checked = false; }); update(); });
+  document.querySelector('#planner-andy-trade').addEventListener('click', () => {
+    andyTradePreset();
+    document.querySelectorAll('[data-planner-item]').forEach(input => {
+      const key = input.dataset.plannerItem;
+      input.checked = !plannerExcluded.has(key);
+    });
+    update();
+  });
   document.querySelectorAll('[data-planner-item]').forEach(input => input.addEventListener('change', event => {
     const key = event.target.dataset.plannerItem;
     if (event.target.checked) plannerExcluded.delete(key); else plannerExcluded.add(key);
