@@ -39,7 +39,7 @@ const materialSets = {
   t6: [['Blood', 24295], ['Bones', 24358], ['Claws', 24351], ['Dust', 24277], ['Fangs', 24357], ['Scales', 24289], ['Totems', 24300], ['Venom', 24283]]
 };
 Object.entries(materialSets).forEach(([id, components]) => {
-  resources.find(resource => resource.id === id).components = components.map(([name, itemId]) => ({ name, itemId, quantity: 1 }));
+  resources.find(resource => resource.id === id).components = components.map(([name, itemId]) => ({ name, itemId, quantity: 250 }));
 });
 const condensedGiftComponents = [
   [24351, 100], [24350, 250], [24349, 50], [24348, 50],
