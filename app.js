@@ -145,13 +145,14 @@ function combinations(items, size) {
   return results;
 }
 function plannerRoutes(target) {
-  const items = plannerItems();
+  const items = plannerItems().slice(0, 18);
+  if (!items.length) return [];
   const routeMap = new Map();
   const maxRouteSize = Math.min(3, items.length);
   for (let routeSize = 1; routeSize <= maxRouteSize; routeSize++) {
     combinations(items, routeSize).forEach(combo => {
       const counts = new Array(combo.length).fill(0);
-      const maxCounts = combo.map(item => Math.min(25, Math.max(0, Math.floor(target / item.value))));
+      const maxCounts = combo.map(item => Math.min(12, Math.max(0, Math.floor(target / item.value))));
       const walk = (index) => {
         if (index === combo.length) {
           const parts = combo.map((item, partIndex) => ({ name: item.name, count: counts[partIndex] })).filter(part => part.count > 0);
