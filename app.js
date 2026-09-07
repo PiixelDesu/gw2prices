@@ -1,8 +1,8 @@
 const resources = [
-  { id: 't3', name: 'T3 material set', category: 'Materials', icon: '◈', value: 73.37, depth: 250, unit: 'set', note: 'Eight fine crafting materials' },
-  { id: 't4', name: 'T4 material set', category: 'Materials', icon: '◇', value: 81.00, depth: 250, unit: 'set', note: 'Eight masterwork materials' },
-  { id: 't5', name: 'T5 material set', category: 'Materials', icon: '⬡', value: 11.68, depth: 250, unit: 'set', note: 'Eight rare crafting materials' },
-  { id: 't6', name: 'T6 material set', category: 'Materials', icon: '✦', value: 392.69, depth: 250, unit: 'set', note: 'Eight powerful crafting materials', featured: true },
+  { id: 't3', name: 'T3 material set', category: 'Materials', icon: '◈', value: 0, depth: 250, unit: 'set', note: 'Eight fine crafting materials' },
+  { id: 't4', name: 'T4 material set', category: 'Materials', icon: '◇', value: 0, depth: 250, unit: 'set', note: 'Eight masterwork materials' },
+  { id: 't5', name: 'T5 material set', category: 'Materials', icon: '⬡', value: 0, depth: 250, unit: 'set', note: 'Eight rare crafting materials' },
+  { id: 't6', name: 'T6 material set', category: 'Materials', icon: '✦', value: 0, depth: 250, unit: 'set', note: 'Eight powerful crafting materials', featured: true },
   { id: 'mc', name: 'Mystic Coin', category: 'Currencies', icon: '◎', value: 1.85, depth: 2500, unit: 'each', note: 'High-volume crafting currency', itemId: 19976 },
   { id: 'ecto', name: 'Glob of Ectoplasm', category: 'Currencies', icon: '●', value: .2083, depth: 2000, unit: 'each', note: '52g 08s per stack', itemId: 19721 },
   { id: 'matrix', name: 'Stabilizing Matrix', category: 'Currencies', icon: '▣', value: .2569, depth: 1000, unit: 'each', note: '64g 23s per stack', itemId: 73248 },
@@ -214,6 +214,12 @@ function methodology() { app.innerHTML = `<section class="quote-page"><p class="
 function apiPage() { app.innerHTML = `<section class="quote-page"><p class="eyebrow">Developer tools</p><h1>Data you can<br><em>take with you.</em></h1><p class="hero-copy" style="margin-top:26px">Piixel Price Check exposes depth exports in the browser and lets you download any quote table as CSV.</p><div class="api-panel"><p class="eyebrow" style="color:#8ccfbd">Piixel data tool</p><div class="code-line">GET https://api.guildwars2.com/v2/commerce/listings?ids=19721,19976</div><p>For production integrations, use the official Guild Wars 2 API directly and keep account API keys restricted. Never share an unrestricted key with a third party.</p></div><div class="content-band"><div class="section-heading"><div><p class="eyebrow">Included tools</p><h2>Small, useful exports</h2></div></div><div class="method-grid"><article class="method-card"><h3>Depth CSV</h3><p>Download buy, sell, and direct-trade values from any resource detail page.</p></article><article class="method-card"><h3>Item references</h3><p>Every tracked resource keeps its item identity, quote depth, and stack context visible.</p></article><article class="method-card"><h3>Official data source</h3><p>Live integrations use api.guildwars2.com/v2/commerce/listings with item IDs.</p></article></div></div></section>`; }
 function download(resource) { const lines = [['Resource', 'Depth', 'Buy', 'Sell', 'Direct trade']]; const depths = resource.depth >= 1000 ? [1, 250, resource.depth, resource.depth * 2, resource.depth * 5] : [1, 50, 100, resource.depth, resource.depth * 2, resource.depth * 4]; depths.forEach((depth, index) => { const variance = 1 + ((index - 2) * .013); lines.push([resource.name, depth, gold(resource.value * .84 * variance), gold(resource.value / .9 * variance), gold(resource.value * variance)]); }); const blob = new Blob([lines.map(row => row.join(',')).join('\n')], { type: 'text/csv' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${resource.id}-price-check.csv`; link.click(); URL.revokeObjectURL(link.href); }
 let liveRefreshStarted = false;
+async function resourceComponentTotal(resource) {
+  if (!resource.components || !resource.components.length) return 0;
+  const values = resource.components.filter(component => component.value != null);
+  if (values.length !== resource.components.length) return 0;
+  return values.reduce((total, component) => total + component.value * component.quantity, 0) * 0.9;
+}
 async function refreshLivePrices() {
   const liveResources = resources.filter(resource => resource.itemId);
   const liveWeapons = resources.flatMap(resource => (resource.weapons || []).map(weapon => { weapon.parent = resource; return weapon; }));
@@ -250,8 +256,8 @@ async function refreshLivePrices() {
       component.value = sell ? sell.unit_price / 10000 : null;
     });
     resources.filter(resource => resource.components).forEach(resource => {
-      const values = resource.components.filter(component => component.value != null);
-      if (values.length === resource.components.length) resource.value = values.reduce((total, component) => total + component.value * component.quantity, 0) * 0.9;
+      const total = resourceComponentTotal(resource);
+      if (total > 0) resource.value = total;
     });
     resources.filter(resource => resource.giftRows).forEach(resource => resource.giftRows.forEach(gift => {
       const values = gift.components.filter(component => component.value != null);
