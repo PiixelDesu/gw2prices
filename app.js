@@ -144,6 +144,17 @@ function plannerRoutes(target) {
   });
   return [...unique.values()].slice(0, 8);
 }
+function plannerFilterSort(items) {
+  const priority = new Map([
+    ['T3 material set', 0],
+    ['T4 material set', 1],
+    ['T5 material set', 2],
+    ['T6 material set', 3],
+    ['Glob of Ectoplasm', 4],
+    ['Mystic Coin', 5]
+  ]);
+  return items.sort((a, b) => (priority.get(a.name) ?? 100) - (priority.get(b.name) ?? 100) || a.name.localeCompare(b.name));
+}
 function routeItems(route) {
   if (route.first.name === route.second.name) return `${(route.firstCount + route.secondCount).toLocaleString()} × ${route.first.name}`;
   const parts = [];
@@ -153,7 +164,7 @@ function routeItems(route) {
 }
 function planner() {
   const target = 1000;
-  const filterItems = plannerItems(true);
+  const filterItems = plannerFilterSort(plannerItems(true));
   app.innerHTML = `<section class="quote-page"><p class="eyebrow">Piixel tool · live market values</p><h1>Turn gold into<br><em>a route.</em></h1><p class="hero-copy" style="margin-top:26px">Enter a target and compare practical ways to reach it using every currently priced resource. Routes use 90% direct-trade value, then favor the least over-target amount.</p><div class="planner-controls"><label for="gold-target">Target gold</label><div class="search-wrap"><span class="search-icon">◎</span><input id="gold-target" type="number" min="1" step="1" value="${target}" aria-label="Target gold"></div><span class="section-note">Values use the latest available API snapshot.</span></div><div class="planner-filter"><div class="section-heading"><div><p class="eyebrow">Choose your inputs</p><h2>Include items</h2></div><div><span class="section-note">Uncheck anything you do not want to use</span><div class="filter-actions"><button class="btn" id="planner-check-all" type="button">Check all</button><button class="btn" id="planner-uncheck-all" type="button">Uncheck all</button></div></div></div><div class="planner-checks">${filterItems.map(item => `<label><input type="checkbox" data-planner-item="${plannerItemKey(item)}" ${plannerExcluded.has(plannerItemKey(item)) ? '' : 'checked'}><span>${item.name}</span></label>`).join('')}</div></div><div id="planner-results"></div></section>`;
   const update = () => {
     const amount = Math.max(1, Number(document.querySelector('#gold-target').value) || target);
