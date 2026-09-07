@@ -1,0 +1,1 @@
+# gw2prices.github.io
