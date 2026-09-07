@@ -17,7 +17,7 @@ const resources = [
   { id: 'lamplighter-badge', name: "Lamplighter's Badge", category: 'Materials', icon: '☼', value: 1.2645, depth: 250, unit: 'each', note: '316g 12s per stack', itemId: 97790 },
   { id: 'amalgamated-gemstone', name: 'Amalgamated Gemstone', category: 'Materials', icon: '◆', value: .8955, depth: 2000, unit: 'each', note: '223g 87s per stack', itemId: 68063 },
   { id: 'amalgamated-draconic-lodestone', name: 'Amalgamated Draconic Lodestone', category: 'Materials', icon: '⬟', value: 22.9905, depth: 100, unit: 'each', note: '5,747g 64s per stack', itemId: 92687 },
-  { id: 'condensed-gift', name: 'Gifts of Condensed Might & Magic', category: 'Crafted', icon: '✣', value: 111.91, magicValue: 113.09, depth: 2000, unit: 'gift', note: 'Built from T6 materials' },
+  { id: 'condensed-gift', name: 'Gift of Condensed Might and Magic', category: 'Crafted', icon: '✣', value: 0, depth: 2000, unit: 'gift', note: 'All condensed gift versions' },
   { id: 'precursor', name: 'Precursor weapons', category: 'Weapons', icon: '⚔', value: 90, depth: 1, unit: '90% sell', note: 'Quote varies by weapon' },
   { id: 'leg', name: 'Legendary weapons', category: 'Weapons', icon: '⚜', value: 85, depth: 1, unit: '85% sell', note: 'Quote varies by weapon' }
 ];
@@ -51,8 +51,25 @@ const condensedGiftComponents = [
   [24300, 100], [24299, 250], [24363, 50], [24298, 50],
   [24277, 100], [24276, 250], [24275, 50], [24274, 50]
 ].map(([itemId, depth]) => ({ itemId, depth, quantity: 1 }));
-resources.find(resource => resource.id === 'condensed-gift').components = condensedGiftComponents.slice(0, 16);
-resources.find(resource => resource.id === 'condensed-gift').alternateComponents = condensedGiftComponents.slice(16);
+const giftRows = [
+  ['Gift of Claws', [24351, 100, 24350, 250, 24349, 50, 24348, 50]],
+  ['Gift of Scales', [24289, 100, 24288, 250, 24287, 50, 24286, 50]],
+  ['Gift of Bones', [24358, 100, 24341, 250, 24345, 50, 24344, 50]],
+  ['Gift of Fangs', [24357, 100, 24356, 250, 24355, 50, 24354, 50]],
+  ['Gift of Blood', [24295, 100, 24294, 250, 24293, 50, 24292, 50]],
+  ['Gift of Venom', [24283, 100, 24282, 250, 24281, 50, 24280, 50]],
+  ['Gift of Totems', [24300, 100, 24299, 250, 24363, 50, 24298, 50]],
+  ['Gift of Dust', [24277, 100, 24276, 250, 24275, 50, 24274, 50]],
+  ['Gift of Condensed Might', condensedGiftComponents.slice(0, 16)],
+  ['Gift of Condensed Magic', condensedGiftComponents.slice(16)]
+].map(([name, components]) => ({
+  name,
+  components: typeof components[0] === 'number'
+    ? Array.from({ length: components.length / 2 }, (_, index) => ({ itemId: components[index * 2], depth: components[index * 2 + 1], quantity: components[index * 2 + 1] }))
+    : components.map(component => ({ ...component, quantity: component.depth })),
+  value: 0
+}));
+resources.find(resource => resource.id === 'condensed-gift').giftRows = giftRows;
 const materialNames = ['Blood', 'Bones', 'Claws', 'Dust', 'Fangs', 'Scales', 'Totems', 'Venom'];
 const snapshot = 'September 7, 2026 · 12:57 UTC';
 const app = document.querySelector('#app');
@@ -101,8 +118,11 @@ function plannerItems(includeDisabled = false) {
       });
       return;
     }
+    if (resource.giftRows) {
+      resource.giftRows.forEach(gift => { if (gift.value > 0) items.push({ name: gift.name, value: gift.value, group: resource.name }); });
+      return;
+    }
     if (resource.value > 0) items.push({ name: resource.name, value: resource.value, group: resource.category });
-    if (resource.magicValue) items.push({ name: 'Gift of Condensed Magic', value: resource.magicValue, group: 'Crafted' });
   });
   return items.filter(item => Number.isFinite(item.value) && item.value > 0 && (includeDisabled || !plannerExcluded.has(plannerItemKey(item)))).sort((a, b) => b.value - a.value);
 }
@@ -164,13 +184,20 @@ function weaponRows(resource) {
     return `<tr><td><strong>${weapon.name}</strong><br><span class="section-note">Item ${weapon.itemId}</span></td><td class="price">${buy ? gold(buy) : '—'}</td><td class="price">${sell ? gold(sell) : '—'}</td><td class="price">${quote ? gold(quote) : '—'}</td><td>${sell ? 'live' : 'no listing'}</td></tr>`;
   }).join('');
 }
+function giftRowsTable(resource) {
+  return resource.giftRows.map(gift => `<tr><td><strong>${gift.name}</strong></td><td class="price">${gift.value ? gold(gift.value) : '—'}</td><td class="price">${gift.value ? gold(gift.value / .9) : '—'}</td><td class="price">${gift.value ? gold(gift.value) : '—'}</td><td>${gift.value ? 'live' : 'no listing'}</td></tr>`).join('');
+}
 function itemPage(resource) {
+  if (resource.giftRows) return giftPage(resource);
   const isWeapon = resource.category === 'Weapons';
-  const isGift = resource.id === 'condensed-gift';
   const headline = isWeapon ? `About ${resource.name.toLowerCase()}` : `${resource.name} price check`;
-  app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">${resource.category} · market reference</p><h1>${headline}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button><button class="btn primary" id="download-csv">↓ CSV</button></div></div><div class="quote-hero"><div><div class="quote-label">Recommended direct-trade quote</div><div class="quote-amount">${isWeapon ? resource.value + '%' : isGift ? `${gold(resource.value)} / ${gold(resource.magicValue)}` : gold(resource.value)} <small>${isWeapon ? 'of lowest sell' : isGift ? 'Might / Magic per gift' : `per ${resource.unit}`}</small></div></div><div class="quote-meta"><strong>${isWeapon ? resource.weapons.length : resource.depth.toLocaleString()}</strong> ${isWeapon ? 'weapons' : 'listing depth'}<br>${isWeapon ? (resource.id === 'leg' ? '85% sell methodology' : '90% sell methodology') : '90% sell methodology'}</div></div><div class="info-strip"><div class="info-cell"><span>Trading Post buy</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value * .84)}</strong></div><div class="info-cell"><span>Trading Post sell</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value / .9)}</strong></div><div class="info-cell"><span>Stack reference</span><strong>${isWeapon ? resource.note : isGift ? 'Might / Magic' : resource.unit === 'set' ? '8 materials' : gold(resource.value * 250)}</strong></div></div><div class="section-heading"><div><p class="eyebrow">Order book snapshot</p><h2>${resource.name}</h2></div><span class="section-note">${isWeapon ? 'Each row is a separate live Trading Post item' : 'Buyers wait · sellers list · direct trade midpoint'}</span></div><div class="table-card"><table><thead><tr><th>${isWeapon ? 'Weapon' : 'Depth'}</th><th>100% buy price</th><th>100% sell price</th><th>${isWeapon && resource.id === 'leg' ? '85% direct trade' : '90% direct trade'}</th><th>Signal</th></tr></thead><tbody>${isWeapon ? weaponRows(resource) : depthRows(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> This estimate reads current listings. Check the recurring high point on <a href="https://www.gw2bltc.com/" target="_blank" rel="noreferrer"><u>GW2BLTC</u></a> before trading if the item is volatile or the quote looks unusual.</span></div></section>`;
+  app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">${resource.category} · market reference</p><h1>${headline}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button><button class="btn primary" id="download-csv">↓ CSV</button></div></div><div class="quote-hero"><div><div class="quote-label">Recommended direct-trade quote</div><div class="quote-amount">${isWeapon ? resource.value + '%' : gold(resource.value)} <small>${isWeapon ? 'of lowest sell' : `per ${resource.unit}`}</small></div></div><div class="quote-meta"><strong>${isWeapon ? resource.weapons.length : resource.depth.toLocaleString()}</strong> ${isWeapon ? 'weapons' : 'listing depth'}<br>${isWeapon ? (resource.id === 'leg' ? '85% sell methodology' : '90% sell methodology') : '90% sell methodology'}</div></div><div class="info-strip"><div class="info-cell"><span>Trading Post buy</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value * .84)}</strong></div><div class="info-cell"><span>Trading Post sell</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value / .9)}</strong></div><div class="info-cell"><span>Stack reference</span><strong>${isWeapon ? resource.note : resource.unit === 'set' ? '8 materials' : gold(resource.value * 250)}</strong></div></div><div class="section-heading"><div><p class="eyebrow">Order book snapshot</p><h2>${resource.name}</h2></div><span class="section-note">${isWeapon ? 'Each row is a separate live Trading Post item' : 'Buyers wait · sellers list · direct trade midpoint'}</span></div><div class="table-card"><table><thead><tr><th>${isWeapon ? 'Weapon' : 'Depth'}</th><th>100% buy price</th><th>100% sell price</th><th>${isWeapon && resource.id === 'leg' ? '85% direct trade' : '90% direct trade'}</th><th>Signal</th></tr></thead><tbody>${isWeapon ? weaponRows(resource) : depthRows(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> This estimate reads current listings. Check the recurring high point on <a href="https://www.gw2bltc.com/" target="_blank" rel="noreferrer"><u>GW2BLTC</u></a> before trading if the item is volatile or the quote looks unusual.</span></div></section>`;
   document.querySelector('#back-home').addEventListener('click', () => { location.hash = 'home'; });
   document.querySelector('#download-csv').addEventListener('click', () => download(resource));
+}
+function giftPage(resource) {
+  app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">Crafted · grouped price check</p><h1>${resource.name}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button></div></div><div class="quote-hero"><div><div class="quote-label">All gift versions</div><div class="quote-amount">10 <small>crafted gifts</small></div></div><div class="quote-meta"><strong>2,000</strong> listing depth<br>90% direct-trade methodology</div></div><div class="section-heading"><div><p class="eyebrow">Recipe values</p><h2>Condensed gift prices</h2></div><span class="section-note">Each row is a separate planner item</span></div><div class="table-card"><table><thead><tr><th>Gift</th><th>90% direct trade</th><th>100% sell reference</th><th>Quoted value</th><th>Signal</th></tr></thead><tbody>${giftRowsTable(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> Each gift is calculated from its recipe components using current Trading Post listings at the original depth targets.</span></div></section>`;
+  document.querySelector('#back-home').addEventListener('click', () => { location.hash = 'home'; });
 }
 function methodology() { app.innerHTML = `<section class="quote-page"><p class="eyebrow">Documentation</p><h1>Read the market,<br><em>not just the number.</em></h1><div class="method-grid" style="margin-top:45px"><article class="method-card"><h3>Why 90% sell?</h3><p>Instant buyers pay 100% of the sell listing. Sellers who wait receive about 85% after the Trading Post tax. Ninety percent is a clean midpoint for a direct, tax-free exchange.</p></article><article class="method-card"><h3>What is depth?</h3><p>Instead of trusting the first listing, Piixel Price Check walks through the order book until it has seen the requested quantity. The last unit price becomes the quote.</p></article><article class="method-card"><h3>What can go wrong?</h3><p>Events, patches, farming, low volume, and deliberate undercuts can all distort a snapshot. History and recent player trade reviews provide the missing context.</p></article></div><div class="content-band"><div class="section-heading"><div><p class="eyebrow">Exceptions</p><h2>Some markets speak differently</h2></div></div><div class="table-card"><table><thead><tr><th>Market</th><th>Default basis</th><th>Why</th></tr></thead><tbody><tr><td>Legendary weapons</td><td>85% sell</td><td>Buyers compare against post-tax liquidation value.</td></tr><tr><td>Precursor weapons</td><td>90% sell</td><td>Usually trades between buy and sell references.</td></tr><tr><td>Infusions & contracts</td><td>Review trades</td><td>Low-volume markets need human context.</td></tr></tbody></table></div></div></section>`; }
 function apiPage() { app.innerHTML = `<section class="quote-page"><p class="eyebrow">Developer tools</p><h1>Data you can<br><em>take with you.</em></h1><p class="hero-copy" style="margin-top:26px">Piixel Price Check exposes depth exports in the browser and lets you download any quote table as CSV.</p><div class="api-panel"><p class="eyebrow" style="color:#8ccfbd">Piixel data tool</p><div class="code-line">GET https://api.guildwars2.com/v2/commerce/listings?ids=19721,19976</div><p>For production integrations, use the official Guild Wars 2 API directly and keep account API keys restricted. Never share an unrestricted key with a third party.</p></div><div class="content-band"><div class="section-heading"><div><p class="eyebrow">Included tools</p><h2>Small, useful exports</h2></div></div><div class="method-grid"><article class="method-card"><h3>Depth CSV</h3><p>Download buy, sell, and direct-trade values from any resource detail page.</p></article><article class="method-card"><h3>Item references</h3><p>Every tracked resource keeps its item identity, quote depth, and stack context visible.</p></article><article class="method-card"><h3>Official data source</h3><p>Live integrations use api.guildwars2.com/v2/commerce/listings with item IDs.</p></article></div></div></section>`; }
@@ -179,12 +206,14 @@ let liveRefreshStarted = false;
 async function refreshLivePrices() {
   const liveResources = resources.filter(resource => resource.itemId);
   const liveWeapons = resources.flatMap(resource => (resource.weapons || []).map(weapon => { weapon.parent = resource; return weapon; }));
-  const liveComponents = resources.flatMap(resource => [...(resource.components || []), ...(resource.alternateComponents || [])].map(component => ({ ...component, parent: resource })));
+  const liveComponents = resources.flatMap(resource => [ ...(resource.components || []), ...((resource.giftRows || []).flatMap(gift => gift.components)) ].map(component => { component.parent = resource; return component; }));
   try {
-    const ids = [...liveResources.map(resource => resource.itemId), ...liveWeapons.map(weapon => weapon.itemId), ...liveComponents.map(component => component.itemId)].filter((itemId, index, all) => all.indexOf(itemId) === index).join(',');
-    const response = await fetch(`https://api.guildwars2.com/v2/commerce/listings?ids=${ids}`);
-    if (!response.ok) throw new Error('Trading Post API unavailable');
-    const listings = await response.json();
+    const itemIds = [...liveResources.map(resource => resource.itemId), ...liveWeapons.map(weapon => weapon.itemId), ...liveComponents.map(component => component.itemId)].filter((itemId, index, all) => all.indexOf(itemId) === index);
+    const batches = [];
+    for (let index = 0; index < itemIds.length; index += 100) batches.push(itemIds.slice(index, index + 100));
+    const listingResponses = await Promise.all(batches.map(batch => fetch(`https://api.guildwars2.com/v2/commerce/listings?ids=${batch.join(',')}`)));
+    if (listingResponses.some(response => !response.ok)) throw new Error('Trading Post API unavailable');
+    const listings = (await Promise.all(listingResponses.map(response => response.json()))).flat();
     liveResources.forEach(resource => {
       const item = listings.find(listing => listing.id === resource.itemId);
       if (!item) return;
@@ -206,17 +235,17 @@ async function refreshLivePrices() {
       const item = listings.find(listing => listing.id === component.itemId);
       if (!item) return;
       let seen = 0;
-      const sell = item.sells.find(listing => (seen += listing.quantity) >= (component.depth || component.parent.depth));
+      const sell = item.sells.find(listing => (seen += listing.quantity) >= (component.depth || component.parent.depth)) || item.sells[item.sells.length - 1];
       component.value = sell ? sell.unit_price / 10000 : null;
     });
     resources.filter(resource => resource.components).forEach(resource => {
       const values = resource.components.filter(component => component.value != null);
       if (values.length === resource.components.length) resource.value = values.reduce((total, component) => total + component.value * component.quantity, 0) * 0.9;
-      if (resource.alternateComponents) {
-        const alternateValues = resource.alternateComponents.filter(component => component.value != null);
-        if (alternateValues.length === resource.alternateComponents.length) resource.magicValue = alternateValues.reduce((total, component) => total + component.value * component.quantity, 0) * 0.9;
-      }
     });
+    resources.filter(resource => resource.giftRows).forEach(resource => resource.giftRows.forEach(gift => {
+      const values = gift.components.filter(component => component.value != null);
+      if (values.length === gift.components.length) gift.value = values.reduce((total, component) => total + component.value * component.quantity, 0) * 0.9;
+    }));
     render();
   } catch (error) {
     console.warn('Using snapshot prices:', error.message);
