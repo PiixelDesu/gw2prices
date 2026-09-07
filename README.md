@@ -1,6 +1,6 @@
-# GW2 Price Check
+# Piixel Price Check
 
-A GitHub Pages-friendly recreation of the Guild Wars 2 Price Check workflow.
+A GitHub Pages-friendly Guild Wars 2 price-check tool made by Piixel.
 
 ## Included
 

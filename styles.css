@@ -33,6 +33,18 @@ h1 { max-width: 700px; margin: 0; font-size: clamp(42px, 6vw, 76px); line-height
 .search-wrap { position: relative; margin-top: 19px; max-width: 550px; }
 .search-wrap input { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: white; padding: 16px 18px 16px 44px; color: var(--ink); outline: none; box-shadow: var(--shadow); }
 .search-wrap input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(21,111,108,.1); }
+.planner-controls { display: flex; align-items: end; gap: 14px; margin: 32px 0 48px; padding: 20px; border: 1px solid var(--line); border-radius: 11px; background: white; box-shadow: var(--shadow); }
+.planner-controls label { font: 11px 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.planner-controls .search-wrap { margin: 0; width: 220px; }
+.planner-controls .section-note { margin-bottom: 16px; }
+.planner-filter { margin: 0 0 42px; padding: 20px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.72); }
+.planner-filter .section-heading { margin-bottom: 14px; }
+.filter-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 9px; }
+.filter-actions .btn { padding: 6px 9px; font-size: 10px; }
+.planner-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.planner-checks label { display: flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 11px; background: white; color: var(--muted); cursor: pointer; font-size: 11px; }
+.planner-checks label:has(input:checked) { border-color: #8bc8bb; background: var(--mint); color: var(--teal-dark); }
+.planner-checks input { accent-color: var(--teal); }
 .search-icon { position: absolute; left: 16px; top: 16px; color: var(--muted); }
 .section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 18px; }
 h2 { margin: 0; font-size: 22px; letter-spacing: -.04em; }
