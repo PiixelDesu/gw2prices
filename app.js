@@ -147,7 +147,7 @@ function combinations(items, size) {
 function plannerRoutes(target) {
   const items = plannerItems();
   const routeMap = new Map();
-  const maxRouteSize = Math.min(4, items.length); 
+  const maxRouteSize = Math.min(3, items.length);
   for (let routeSize = 1; routeSize <= maxRouteSize; routeSize++) {
     combinations(items, routeSize).forEach(combo => {
       const counts = new Array(combo.length).fill(0);
