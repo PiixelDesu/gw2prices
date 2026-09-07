@@ -114,15 +114,15 @@ function plannerItems(includeDisabled = false) {
     if (resource.id === 'leg' || resource.id === 'precursor') return;
     if (resource.category === 'Weapons') {
       (resource.weapons || []).forEach(weapon => {
-        if (weapon.sellPrice) items.push({ name: weapon.name, value: weapon.sellPrice * .9, group: resource.name });
+        if (weapon.sellPrice) items.push({ name: weapon.name, value: weapon.sellPrice, group: resource.name });
       });
       return;
     }
     if (resource.giftRows) {
-      resource.giftRows.forEach(gift => { if (gift.value > 0) items.push({ name: gift.name, value: gift.value, group: resource.name }); });
+      resource.giftRows.forEach(gift => { if (gift.value > 0) items.push({ name: gift.name, value: gift.value / .9, group: resource.name }); });
       return;
     }
-    if (resource.value > 0) items.push({ name: resource.name, value: resource.value, group: resource.category });
+    if (resource.value > 0) items.push({ name: resource.name, value: resource.value / .9, group: resource.category });
   });
   return items.filter(item => Number.isFinite(item.value) && item.value > 0 && (includeDisabled || !plannerExcluded.has(plannerItemKey(item)))).sort((a, b) => b.value - a.value);
 }
@@ -259,7 +259,7 @@ function planner() {
   const filterItems = plannerFilterSort(plannerItems(true));
   plannerExcluded.clear();
   filterItems.forEach(item => plannerExcluded.add(plannerItemKey(item)));
-  app.innerHTML = `<section class="quote-page"><p class="eyebrow">Piixel tool · live market values</p><h1>Turn gold into<br><em>a route.</em></h1><p class="hero-copy" style="margin-top:26px">Enter a target and compare practical ways to reach it using every currently priced resource. Routes use 90% direct-trade value, then favor the least over-target amount.</p><div class="planner-controls"><label for="gold-target">Target gold</label><div class="search-wrap"><span class="search-icon">◎</span><input id="gold-target" type="number" min="1" step="1" value="${target}" aria-label="Target gold"></div><span class="section-note">Values use the latest available API snapshot.</span></div><div class="planner-filter"><div class="section-heading"><div><p class="eyebrow">Choose your inputs</p><h2>Include items</h2></div><div><span class="section-note">Uncheck anything you do not want to use</span><div class="filter-actions"><button class="btn" id="planner-check-all" type="button">Check all</button><button class="btn" id="planner-uncheck-all" type="button">Uncheck all</button><button class="btn" id="planner-andy-trade" type="button">Andy Trade</button></div></div></div><div class="planner-checks">${filterItems.map(item => `<label><input type="checkbox" data-planner-item="${plannerItemKey(item)}" ${plannerExcluded.has(plannerItemKey(item)) ? '' : 'checked'}><span>${item.name}</span></label>`).join('')}</div></div><div id="planner-results"></div></section>`;
+  app.innerHTML = `<section class="quote-page"><p class="eyebrow">Piixel tool · live market values</p><h1>Turn gold into<br><em>a route.</em></h1><p class="hero-copy" style="margin-top:26px">Enter a target and compare practical ways to reach it using every currently priced resource. Routes use 100% Trading Post sell value, then favor the least over-target amount.</p><div class="planner-controls"><label for="gold-target">Target gold</label><div class="search-wrap"><span class="search-icon">◎</span><input id="gold-target" type="number" min="1" step="1" value="${target}" aria-label="Target gold"></div><span class="section-note">Values use the latest available API snapshot.</span></div><div class="planner-filter"><div class="section-heading"><div><p class="eyebrow">Choose your inputs</p><h2>Include items</h2></div><div><span class="section-note">Uncheck anything you do not want to use</span><div class="filter-actions"><button class="btn" id="planner-check-all" type="button">Check all</button><button class="btn" id="planner-uncheck-all" type="button">Uncheck all</button><button class="btn" id="planner-andy-trade" type="button">Andy Trade</button></div></div></div><div class="planner-checks">${filterItems.map(item => `<label><input type="checkbox" data-planner-item="${plannerItemKey(item)}" ${plannerExcluded.has(plannerItemKey(item)) ? '' : 'checked'}><span>${item.name}</span></label>`).join('')}</div></div><div id="planner-results"></div></section>`;
   const update = () => {
     const amount = Math.max(1, Number(document.querySelector('#gold-target').value) || target);
     const routes = plannerRoutes(amount);
