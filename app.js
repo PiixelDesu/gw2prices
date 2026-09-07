@@ -126,23 +126,55 @@ function plannerItems(includeDisabled = false) {
   });
   return items.filter(item => Number.isFinite(item.value) && item.value > 0 && (includeDisabled || !plannerExcluded.has(plannerItemKey(item)))).sort((a, b) => b.value - a.value);
 }
+function combinations(items, size) {
+  if (size === 0) return [[]];
+  if (items.length < size) return [];
+  const results = [];
+  const walk = (start, current) => {
+    if (current.length === size) {
+      results.push([...current]);
+      return;
+    }
+    for (let index = start; index <= items.length - (size - current.length); index++) {
+      current.push(items[index]);
+      walk(index + 1, current);
+      current.pop();
+    }
+  };
+  walk(0, []);
+  return results;
+}
 function plannerRoutes(target) {
   const items = plannerItems();
-  const routes = [];
-  items.forEach((first, firstIndex) => items.slice(firstIndex).forEach(second => {
-    [Math.floor(target / first.value), Math.max(0, Math.floor(target / first.value) - 1)].forEach(firstCount => {
-      const remainder = Math.max(0, target - (firstCount * first.value));
-      const secondCount = remainder ? Math.ceil(remainder / second.value) : 0;
-      const total = firstCount * first.value + secondCount * second.value;
-      if (total >= target && (firstCount || secondCount)) routes.push({ first, firstCount, second, secondCount, total, over: total - target });
+  const routeMap = new Map();
+  const maxRouteSize = Math.min(4, items.length); 
+  for (let routeSize = 1; routeSize <= maxRouteSize; routeSize++) {
+    combinations(items, routeSize).forEach(combo => {
+      const counts = new Array(combo.length).fill(0);
+      const maxCounts = combo.map(item => Math.min(25, Math.max(0, Math.floor(target / item.value))));
+      const walk = (index) => {
+        if (index === combo.length) {
+          const parts = combo.map((item, partIndex) => ({ name: item.name, count: counts[partIndex] })).filter(part => part.count > 0);
+          if (!parts.length) return;
+          const total = parts.reduce((sum, part) => sum + (items.find(item => item.name === part.name)?.value || 0) * part.count, 0);
+          if (total >= target) {
+            const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
+            const over = total - target;
+            if (!routeMap.has(key) || routeMap.get(key).over > over) {
+              routeMap.set(key, { parts, total, over, itemCount: parts.reduce((sum, part) => sum + part.count, 0) });
+            }
+          }
+          return;
+        }
+        for (let count = 0; count <= maxCounts[index]; count++) {
+          counts[index] = count;
+          walk(index + 1);
+        }
+      };
+      walk(0);
     });
-  }));
-  const unique = new Map();
-  routes.sort((a, b) => a.over - b.over || (a.firstCount + a.secondCount) - (b.firstCount + b.secondCount)).forEach(route => {
-    const key = routeItems(route);
-    if (!unique.has(key)) unique.set(key, route);
-  });
-  return [...unique.values()].slice(0, 8);
+  }
+  return [...routeMap.values()].sort((a, b) => a.over - b.over || a.itemCount - b.itemCount || a.total - b.total).slice(0, 8);
 }
 function plannerFilterSort(items) {
   const priority = new Map([
@@ -156,11 +188,7 @@ function plannerFilterSort(items) {
   return items.sort((a, b) => (priority.get(a.name) ?? 100) - (priority.get(b.name) ?? 100) || a.name.localeCompare(b.name));
 }
 function routeItems(route) {
-  if (route.first.name === route.second.name) return `${(route.firstCount + route.secondCount).toLocaleString()} × ${route.first.name}`;
-  const parts = [];
-  if (route.firstCount) parts.push(`${route.firstCount.toLocaleString()} × ${route.first.name}`);
-  if (route.secondCount && route.second.name !== route.first.name) parts.push(`${route.secondCount.toLocaleString()} × ${route.second.name}`);
-  return parts.join(' + ');
+  return (route.parts || []).map(part => `${part.count.toLocaleString()} × ${part.name}`).join(' + ');
 }
 function planner() {
   const target = 1000;
@@ -169,7 +197,7 @@ function planner() {
   const update = () => {
     const amount = Math.max(1, Number(document.querySelector('#gold-target').value) || target);
     const routes = plannerRoutes(amount);
-    document.querySelector('#planner-results').innerHTML = `<div class="section-heading"><div><p class="eyebrow">${amount.toLocaleString()}g target</p><h2>Best routes right now</h2></div><span class="section-note">${plannerItems().length} priced items considered</span></div><div class="table-card"><table><thead><tr><th>Route</th><th>Estimated cost</th><th>Over target</th><th>Items</th></tr></thead><tbody>${routes.map((route, index) => `<tr class="${index === 0 ? 'highlight' : ''}"><td><strong>${index === 0 ? 'Closest match' : `Option ${index}`}</strong><br><span class="section-note">${routeItems(route)}</span></td><td class="price">${gold(route.total)}</td><td class="price">${gold(route.over)}</td><td class="mono">${(route.firstCount + route.secondCount).toLocaleString()}</td></tr>`).join('')}</tbody></table></div><div class="callout"><span>◌</span><span><strong>How it works:</strong> Piixel compares one- and two-item combinations. It is a shopping guide, not financial advice; market depth, liquidity, and inventory limits still matter.</span></div>`;
+    document.querySelector('#planner-results').innerHTML = `<div class="section-heading"><div><p class="eyebrow">${amount.toLocaleString()}g target</p><h2>Best routes right now</h2></div><span class="section-note">${plannerItems().length} priced items considered</span></div><div class="table-card"><table><thead><tr><th>Route</th><th>Estimated cost</th><th>Over target</th><th>Items</th></tr></thead><tbody>${routes.map((route, index) => `<tr class="${index === 0 ? 'highlight' : ''}"><td><strong>${index === 0 ? 'Closest match' : `Option ${index}`}</strong><br><span class="section-note">${routeItems(route)}</span></td><td class="price">${gold(route.total)}</td><td class="price">${gold(route.over)}</td><td class="mono">${(route.itemCount || 0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div><div class="callout"><span>◌</span><span><strong>How it works:</strong> Piixel compares multi-item routes to reach the target. It is a shopping guide, not financial advice; market depth, liquidity, and inventory limits still matter.</span></div>`;
   };
   document.querySelector('#gold-target').addEventListener('input', update);
   document.querySelector('#planner-check-all').addEventListener('click', () => { plannerExcluded.clear(); document.querySelectorAll('[data-planner-item]').forEach(input => { input.checked = true; }); update(); });
