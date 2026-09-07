@@ -162,7 +162,7 @@ function plannerRoutes(target) {
           const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
           const over = total - target;
           if (!routeMap.has(key) || routeMap.get(key).over > over) {
-            routeMap.set(key, { parts, total, over, itemCount: parts.reduce((sum, part) => sum + part.count, 0) });
+            routeMap.set(key, { parts, total, over, itemCount: plannerRouteItemCount(parts) });
           }
           return;
         }
@@ -188,6 +188,12 @@ function plannerFilterSort(items) {
     ['Mystic Coin', 5]
   ]);
   return items.sort((a, b) => (priority.get(a.name) ?? 100) - (priority.get(b.name) ?? 100) || a.name.localeCompare(b.name));
+}
+function plannerRouteItemCount(parts) {
+  return (parts || []).reduce((total, part) => {
+    const isTMaterialSet = /^T[3-6] material set$/i.test(part.name);
+    return total + (isTMaterialSet ? part.count * 8 : part.count);
+  }, 0);
 }
 function routeItems(route) {
   return (route.parts || []).map(part => `${part.count.toLocaleString()} × ${part.name}`).join(' + ');
