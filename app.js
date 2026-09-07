@@ -152,27 +152,28 @@ function plannerRoutes(target) {
   for (let routeSize = 1; routeSize <= maxRouteSize; routeSize++) {
     combinations(items, routeSize).forEach(combo => {
       const counts = new Array(combo.length).fill(0);
-      const maxCounts = combo.map(item => Math.min(12, Math.max(0, Math.floor(target / item.value))));
-      const walk = (index) => {
+      const maxCounts = combo.map(item => Math.max(0, Math.ceil(target / item.value)));
+      const walk = (index, currentTotal) => {
         if (index === combo.length) {
+          if (currentTotal < target) return;
           const parts = combo.map((item, partIndex) => ({ name: item.name, count: counts[partIndex] })).filter(part => part.count > 0);
           if (!parts.length) return;
           const total = parts.reduce((sum, part) => sum + (items.find(item => item.name === part.name)?.value || 0) * part.count, 0);
-          if (total >= target) {
-            const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
-            const over = total - target;
-            if (!routeMap.has(key) || routeMap.get(key).over > over) {
-              routeMap.set(key, { parts, total, over, itemCount: parts.reduce((sum, part) => sum + part.count, 0) });
-            }
+          const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
+          const over = total - target;
+          if (!routeMap.has(key) || routeMap.get(key).over > over) {
+            routeMap.set(key, { parts, total, over, itemCount: parts.reduce((sum, part) => sum + part.count, 0) });
           }
           return;
         }
-        for (let count = 0; count <= maxCounts[index]; count++) {
+        const item = combo[index];
+        const safeMax = Math.max(0, Math.min(maxCounts[index], target ? Math.ceil((target - currentTotal) / item.value) : 0));
+        for (let count = 0; count <= safeMax; count++) {
           counts[index] = count;
-          walk(index + 1);
+          walk(index + 1, currentTotal + (count * item.value));
         }
       };
-      walk(0);
+      walk(0, 0);
     });
   }
   return [...routeMap.values()].sort((a, b) => a.over - b.over || a.itemCount - b.itemCount || a.total - b.total).slice(0, 8);
