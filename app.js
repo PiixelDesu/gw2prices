@@ -1,24 +1,24 @@
 const resources = [
-  { id: 't3', name: 'T3 material set', category: 'Materials', icon: '◈', value: 0, depth: 250, unit: 'set', note: 'Eight fine crafting materials' },
-  { id: 't4', name: 'T4 material set', category: 'Materials', icon: '◇', value: 0, depth: 250, unit: 'set', note: 'Eight masterwork materials' },
-  { id: 't5', name: 'T5 material set', category: 'Materials', icon: '⬡', value: 0, depth: 250, unit: 'set', note: 'Eight rare crafting materials' },
+  // { id: 't3', name: 'T3 material set', category: 'Materials', icon: '◈', value: 0, depth: 250, unit: 'set', note: 'Eight fine crafting materials' },
+  // { id: 't4', name: 'T4 material set', category: 'Materials', icon: '◇', value: 0, depth: 250, unit: 'set', note: 'Eight masterwork materials' },
+  // { id: 't5', name: 'T5 material set', category: 'Materials', icon: '⬡', value: 0, depth: 250, unit: 'set', note: 'Eight rare crafting materials' },
   { id: 't6', name: 'T6 material set', category: 'Materials', icon: '✦', value: 0, depth: 250, unit: 'set', note: 'Eight powerful crafting materials', featured: true },
   { id: 'mc', name: 'Mystic Coin', category: 'Currencies', icon: '◎', value: 1.85, depth: 2500, unit: 'each', note: 'High-volume crafting currency', itemId: 19976 },
   { id: 'ecto', name: 'Glob of Ectoplasm', category: 'Currencies', icon: '●', value: .2083, depth: 2000, unit: 'each', note: '52g 08s per stack', itemId: 19721 },
   { id: 'matrix', name: 'Stabilizing Matrix', category: 'Currencies', icon: '▣', value: .2569, depth: 1000, unit: 'each', note: '64g 23s per stack', itemId: 73248 },
-  { id: 'encryption', name: 'Fractal Encryption', category: 'Currencies', icon: '▤', value: .2158, depth: 1000, unit: 'each', note: '53g 95s per stack', itemId: 75919 },
+  // { id: 'encryption', name: 'Fractal Encryption', category: 'Currencies', icon: '▤', value: .2158, depth: 1000, unit: 'each', note: '53g 95s per stack', itemId: 75919 },
   { id: 'ass', name: 'Antique Summoning Stone', category: 'Materials', icon: '✺', value: 1.2618, depth: 250, unit: 'each', note: '315g 45s per stack', itemId: 96978 },
-  { id: 'ambergris', name: 'Chunk of Ancient Ambergris', category: 'Materials', icon: '◒', value: 1.5474, depth: 250, unit: 'each', note: '386g 86s per stack', itemId: 96347 },
+  // { id: 'ambergris', name: 'Chunk of Ancient Ambergris', category: 'Materials', icon: '◒', value: 1.5474, depth: 250, unit: 'each', note: '386g 86s per stack', itemId: 96347 },
   { id: 'jade', name: 'Chunk of Pure Jade', category: 'Materials', icon: '◉', value: .0277, depth: 2000, unit: 'each', note: '6g 93s per stack', itemId: 97102 },
   { id: 'runestone', name: 'Jade Runestone', category: 'Materials', icon: '⬢', value: .4284, depth: 2000, unit: 'each', note: '107g 10s per stack', itemId: 96722 },
-  { id: 'aurene-memory', name: 'Memory of Aurene', category: 'Materials', icon: '❖', value: .2705, depth: 2000, unit: 'each', note: '67g 63s per stack', itemId: 96088 },
+  // { id: 'aurene-memory', name: 'Memory of Aurene', category: 'Materials', icon: '❖', value: .2705, depth: 2000, unit: 'each', note: '67g 63s per stack', itemId: 96088 },
   { id: 'battle-memory', name: 'Memory of Battle', category: 'Materials', icon: '✹', value: .0472, depth: 2000, unit: 'each', note: '11g 81s per stack', itemId: 71581 },
   { id: 'glory-shard', name: 'Shard of Glory', category: 'Materials', icon: '✧', value: .0349, depth: 5000, unit: 'each', note: '8g 73s per stack', itemId: 70820 },
-  { id: 'lamplighter-badge', name: "Lamplighter's Badge", category: 'Materials', icon: '☼', value: 1.2645, depth: 250, unit: 'each', note: '316g 12s per stack', itemId: 97790 },
+  // { id: 'lamplighter-badge', name: "Lamplighter's Badge", category: 'Materials', icon: '☼', value: 1.2645, depth: 250, unit: 'each', note: '316g 12s per stack', itemId: 97790 },
   { id: 'amalgamated-gemstone', name: 'Amalgamated Gemstone', category: 'Materials', icon: '◆', value: .8955, depth: 2000, unit: 'each', note: '223g 87s per stack', itemId: 68063 },
   { id: 'amalgamated-draconic-lodestone', name: 'Amalgamated Draconic Lodestone', category: 'Materials', icon: '⬟', value: 22.9905, depth: 100, unit: 'each', note: '5,747g 64s per stack', itemId: 92687 },
-  { id: 'condensed-gift', name: 'Gift of Condensed Might and Magic', category: 'Crafted', icon: '✣', value: 0, depth: 2000, unit: 'gift', note: 'All condensed gift versions' },
-  { id: 'precursor', name: 'Precursor weapons', category: 'Weapons', icon: '⚔', value: 90, depth: 1, unit: '90% sell', note: 'Quote varies by weapon' },
+  // { id: 'condensed-gift', name: 'Gift of Condensed Might and Magic', category: 'Crafted', icon: '✣', value: 0, depth: 2000, unit: 'gift', note: 'All condensed gift versions' },
+  // { id: 'precursor', name: 'Precursor weapons', category: 'Weapons', icon: '⚔', value: 90, depth: 1, unit: '90% sell', note: 'Quote varies by weapon' },
   { id: 'leg', name: 'Legendary weapons', category: 'Weapons', icon: '⚜', value: 85, depth: 1, unit: '85% sell', note: 'Quote varies by weapon' }
 ];
 
@@ -28,20 +28,21 @@ const precursorWeapons = [
 ].map(([name, itemId]) => ({ name, itemId }));
 const legendaryWeapons = [
   ['Eternity', 30689], ['Sunrise', 30703], ['Twilight', 30704], ['Bolt', 30699], ['The Bifrost', 30698], ['Meteorlogicus', 30695], ['The Flameseeker Prophecies', 30696], ['The Dreamer', 30686], ['Frostfang', 30684], ['Kudzu', 30685], ['Incinerator', 30687], ['Howler', 30702], ['Minstrel', 30688], ['The Predator', 30694], ['Rodgort', 30700], ['The Juggernaut', 30690], ['The Moot', 30692], ['Quip', 30693], ['Kraitkin', 30701], ['Frenzy', 30697], ["Kamohoali'i Kotaki", 30691],
-  ["Aurene's Rending", 96937], ["Aurene's Claw", 96203], ["Aurene's Tail", 95612], ["Aurene's Argument", 95808], ["Aurene's Wisdom", 96221], ["Aurene's Fang", 95675], ["Aurene's Gaze", 97165], ["Aurene's Scale", 96028], ["Aurene's Breath", 97099], ["Aurene's Voice", 97783], ["Aurene's Bite", 96356], ["Aurene's Weight", 95684], ["Aurene's Flight", 97590], ["Aurene's Persuasion", 97377], ["Aurene's Wing", 97077], ["Aurene's Insight", 96652]
+  ["Aurene's Rending", 96937], ["Aurene's Claw", 96203], ["Aurene's Tail", 95612], ["Aurene's Argument", 95808], ["Aurene's Wisdom", 96221], ["Aurene's Fang", 95675], ["Aurene's Gaze", 97165], ["Aurene's Scale", 96028], ["Aurene's Breath", 97099], ["Aurene's Voice", 97783], ["Aurene's Bite", 96356], ["Aurene's Weight", 95684], ["Aurene's Flight", 97590], ["Aurene's Persuasion", 97377], ["Aurene's Wing", 97077], ["Aurene's Insight", 96652], ['Aetheric Anchor', 105497], ['Klobjarne Geirr', 103815]
 ].map(([name, itemId]) => ({ name, itemId }));
-resources.find(resource => resource.id === 'precursor').weapons = precursorWeapons;
+// resources.find(resource => resource.id === 'precursor').weapons = precursorWeapons;
 resources.find(resource => resource.id === 'leg').weapons = legendaryWeapons;
 const materialSets = {
-  t3: [['Blood', 24292], ['Bones', 24344], ['Claws', 24348], ['Dust', 24274], ['Fangs', 24354], ['Scales', 24286], ['Totems', 24298], ['Venom', 24280]],
-  t4: [['Blood', 24293], ['Bones', 24345], ['Claws', 24349], ['Dust', 24275], ['Fangs', 24355], ['Scales', 24287], ['Totems', 24363], ['Venom', 24281]],
-  t5: [['Blood', 24294], ['Bones', 24341], ['Claws', 24350], ['Dust', 24276], ['Fangs', 24356], ['Scales', 24288], ['Totems', 24299], ['Venom', 24282]],
+  // t3: [['Blood', 24292], ['Bones', 24344], ['Claws', 24348], ['Dust', 24274], ['Fangs', 24354], ['Scales', 24286], ['Totems', 24298], ['Venom', 24280]],
+  // t4: [['Blood', 24293], ['Bones', 24345], ['Claws', 24349], ['Dust', 24275], ['Fangs', 24355], ['Scales', 24287], ['Totems', 24363], ['Venom', 24281]],
+  // t5: [['Blood', 24294], ['Bones', 24341], ['Claws', 24350], ['Dust', 24276], ['Fangs', 24356], ['Scales', 24288], ['Totems', 24299], ['Venom', 24282]],
   t6: [['Blood', 24295], ['Bones', 24358], ['Claws', 24351], ['Dust', 24277], ['Fangs', 24357], ['Scales', 24289], ['Totems', 24300], ['Venom', 24283]]
 };
 Object.entries(materialSets).forEach(([id, components]) => {
-  resources.find(resource => resource.id === id).components = components.map(([name, itemId]) => ({ name, itemId, quantity: 250 }));
+  const resource = resources.find(resource => resource.id === id);
+  if (resource) resource.components = components.map(([name, itemId]) => ({ name, itemId, quantity: 250 }));
 });
-const condensedGiftComponents = [
+/* const condensedGiftComponents = [
   [24351, 100], [24350, 250], [24349, 50], [24348, 50],
   [24289, 100], [24288, 250], [24287, 50], [24286, 50],
   [24358, 100], [24341, 250], [24345, 50], [24344, 50],
@@ -69,7 +70,7 @@ const giftRows = [
     : components.map(component => ({ ...component, quantity: component.depth })),
   value: 0
 }));
-resources.find(resource => resource.id === 'condensed-gift').giftRows = giftRows;
+resources.find(resource => resource.id === 'condensed-gift').giftRows = giftRows; */
 const materialNames = ['Blood', 'Bones', 'Claws', 'Dust', 'Fangs', 'Scales', 'Totems', 'Venom'];
 const snapshot = 'September 7, 2026 · 12:57 UTC';
 const app = document.querySelector('#app');
@@ -145,11 +146,13 @@ function combinations(items, size) {
   return results;
 }
 function plannerRoutes(target) {
-  const items = plannerItems().slice(0, 6);
+  const maxRouteStacks = 5;
+  const items = plannerItems();
   if (!items.length) return [];
   const routeMap = new Map();
   const maxRouteSize = Math.min(3, items.length);
   const addRoute = (parts, total) => {
+    if (plannerRouteStackCount(parts) > maxRouteStacks) return;
     if (total < target) return;
     const key = parts.map(part => `${part.count}×${part.name}`).join(' + ');
     const over = total - target;
@@ -162,7 +165,7 @@ function plannerRoutes(target) {
       const ordered = [...combo].sort((a, b) => b.value - a.value);
       if (ordered.length === 1) {
         const item = ordered[0];
-        const maxCount = Math.min(5000, Math.max(1, Math.ceil(target / item.value)));
+        const maxCount = maxRouteStacks * 250;
         for (let count = 1; count <= maxCount; count++) {
           const total = count * item.value;
           if (total >= target) addRoute([{ name: item.name, count }], total);
@@ -171,14 +174,15 @@ function plannerRoutes(target) {
       }
       if (ordered.length === 2) {
         const [first, second] = ordered;
-        const maxFirst = Math.min(5000, Math.max(1, Math.ceil(target / first.value)));
+        const maxFirst = maxRouteStacks * 250;
         for (let countA = 0; countA <= maxFirst; countA++) {
           const totalA = countA * first.value;
+          const maxSecond = (maxRouteStacks - Math.ceil(countA / 250)) * 250;
           if (totalA >= target) {
             addRoute([{ name: first.name, count: countA }, { name: second.name, count: 0 }], totalA);
             continue;
           }
-          const countB = Math.max(0, Math.ceil((target - totalA) / second.value));
+          const countB = Math.min(maxSecond, Math.max(0, Math.ceil((target - totalA) / second.value)));
           const total = totalA + (countB * second.value);
           if (total >= target) {
             addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }], total);
@@ -187,21 +191,22 @@ function plannerRoutes(target) {
         return;
       }
       const [first, second, third] = ordered;
-      const maxFirst = Math.min(300, Math.max(1, Math.ceil(target / first.value)));
-      const maxSecond = Math.min(300, Math.max(1, Math.ceil(target / second.value)));
+      const maxFirst = maxRouteStacks * 250;
       for (let countA = 0; countA <= maxFirst; countA++) {
         const totalA = countA * first.value;
+        const maxSecond = Math.min(300, (maxRouteStacks - Math.ceil(countA / 250)) * 250);
         if (totalA >= target) {
           addRoute([{ name: first.name, count: countA }, { name: second.name, count: 0 }, { name: third.name, count: 0 }], totalA);
           continue;
         }
         for (let countB = 0; countB <= maxSecond; countB++) {
           const totalB = totalA + (countB * second.value);
+          const maxThird = (maxRouteStacks - Math.ceil(countA / 250) - Math.ceil(countB / 250)) * 250;
           if (totalB >= target) {
             addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }, { name: third.name, count: 0 }], totalB);
             continue;
           }
-          const countC = Math.max(0, Math.ceil((target - totalB) / third.value));
+          const countC = Math.min(maxThird, Math.max(0, Math.ceil((target - totalB) / third.value)));
           const total = totalB + (countC * third.value);
           if (total >= target) {
             addRoute([{ name: first.name, count: countA }, { name: second.name, count: countB }, { name: third.name, count: countC }], total);
@@ -210,7 +215,7 @@ function plannerRoutes(target) {
       }
     });
   }
-  return [...routeMap.values()].sort((a, b) => a.over - b.over || a.itemCount - b.itemCount || a.total - b.total).slice(0, 8);
+  return [...routeMap.values()].sort((a, b) => a.over - b.over || a.itemCount - b.itemCount || a.total - b.total).slice(0, 3);
 }
 function plannerFilterSort(items) {
   const priority = new Map([
@@ -232,8 +237,6 @@ function andyTradePreset() {
     'Amalgamated Gemstone',
     'Antique Summoning Stone',
     'Chunk of Pure Jade',
-    'Gift of Condensed Might',
-    'Gift of Condensed Magic',
     'Jade Runestone',
     'Memory of Battle',
     'Shard of Glory',
@@ -253,6 +256,9 @@ function plannerRouteItemCount(parts) {
 }
 function routeItems(route) {
   return (route.parts || []).map(part => `${part.count.toLocaleString()} × ${part.name}`).join(' + ');
+}
+function plannerRouteStackCount(parts) {
+  return (parts || []).reduce((total, part) => total + Math.ceil(part.count / 250), 0);
 }
 function planner() {
   const target = 1000;
@@ -294,7 +300,8 @@ function weaponRows(resource) {
     const buy = weapon.buyPrice;
     const sell = weapon.sellPrice;
     const quote = sell ? sell * percentage : null;
-    return `<tr><td><strong>${weapon.name}</strong><br><span class="section-note">Item ${weapon.itemId}</span></td><td class="price">${buy ? gold(buy) : '—'}</td><td class="price">${sell ? gold(sell) : '—'}</td><td class="price">${quote ? gold(quote) : '—'}</td><td>${sell ? 'live' : 'no listing'}</td></tr>`;
+    const quote90 = sell ? sell * .90 : null;
+    return `<tr><td><strong>${weapon.name}</strong><br><span class="section-note">Item ${weapon.itemId}</span></td><td class="price">${buy ? gold(buy) : '—'}</td><td class="price">${sell ? gold(sell) : '—'}</td><td class="price">${quote ? gold(quote) : '—'}</td><td class="price">${quote90 ? gold(quote90) : '—'}</td><td>${sell ? 'live' : 'no listing'}</td></tr>`;
   }).join('');
 }
 function giftRowsTable(resource) {
@@ -304,7 +311,7 @@ function itemPage(resource) {
   if (resource.giftRows) return giftPage(resource);
   const isWeapon = resource.category === 'Weapons';
   const headline = isWeapon ? `About ${resource.name.toLowerCase()}` : `${resource.name} price check`;
-  app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">${resource.category} · market reference</p><h1>${headline}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button><button class="btn primary" id="download-csv">↓ CSV</button></div></div><div class="quote-hero"><div><div class="quote-label">Recommended direct-trade quote</div><div class="quote-amount">${isWeapon ? resource.value + '%' : gold(resource.value)} <small>${isWeapon ? 'of lowest sell' : `per ${resource.unit}`}</small></div></div><div class="quote-meta"><strong>${isWeapon ? resource.weapons.length : resource.depth.toLocaleString()}</strong> ${isWeapon ? 'weapons' : 'listing depth'}<br>${isWeapon ? (resource.id === 'leg' ? '85% sell methodology' : '90% sell methodology') : '90% sell methodology'}</div></div><div class="info-strip"><div class="info-cell"><span>Trading Post buy</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value * .84)}</strong></div><div class="info-cell"><span>Trading Post sell</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value / .9)}</strong></div><div class="info-cell"><span>Stack reference</span><strong>${isWeapon ? resource.note : resource.unit === 'set' ? '8 materials' : gold(resource.value * 250)}</strong></div></div><div class="section-heading"><div><p class="eyebrow">Order book snapshot</p><h2>${resource.name}</h2></div><span class="section-note">${isWeapon ? 'Each row is a separate live Trading Post item' : 'Buyers wait · sellers list · direct trade midpoint'}</span></div><div class="table-card"><table><thead><tr><th>${isWeapon ? 'Weapon' : 'Depth'}</th><th>100% buy price</th><th>100% sell price</th><th>${isWeapon && resource.id === 'leg' ? '85% direct trade' : '90% direct trade'}</th><th>Signal</th></tr></thead><tbody>${isWeapon ? weaponRows(resource) : depthRows(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> This estimate reads current listings. Check the recurring high point on <a href="https://www.gw2bltc.com/" target="_blank" rel="noreferrer"><u>GW2BLTC</u></a> before trading if the item is volatile or the quote looks unusual.</span></div></section>`;
+  app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">${resource.category} · market reference</p><h1>${headline}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button><button class="btn primary" id="download-csv">↓ CSV</button></div></div><div class="quote-hero"><div><div class="quote-label">Recommended direct-trade quote</div><div class="quote-amount">${isWeapon ? resource.value + '%' : gold(resource.value)} <small>${isWeapon ? 'of lowest sell' : `per ${resource.unit}`}</small></div></div><div class="quote-meta"><strong>${isWeapon ? resource.weapons.length : resource.depth.toLocaleString()}</strong> ${isWeapon ? 'weapons' : 'listing depth'}<br>${isWeapon ? (resource.id === 'leg' ? '85% sell methodology' : '90% sell methodology') : '90% sell methodology'}</div></div><div class="info-strip"><div class="info-cell"><span>Trading Post buy</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value * .84)}</strong></div><div class="info-cell"><span>Trading Post sell</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value / .9)}</strong></div><div class="info-cell"><span>Stack reference</span><strong>${isWeapon ? resource.note : resource.unit === 'set' ? '8 materials' : gold(resource.value * 250)}</strong></div></div><div class="section-heading"><div><p class="eyebrow">Order book snapshot</p><h2>${resource.name}</h2></div><span class="section-note">${isWeapon ? 'Each row is a separate live Trading Post item' : 'Buyers wait · sellers list · direct trade midpoint'}</span></div><div class="table-card"><table><thead><tr><th>${isWeapon ? 'Weapon' : 'Depth'}</th><th>100% buy price</th><th>100% sell price</th><th>${isWeapon && resource.id === 'leg' ? '85% direct trade' : '90% direct trade'}</th>${isWeapon ? '<th>90% direct trade</th>' : ''}<th>Signal</th></tr></thead><tbody>${isWeapon ? weaponRows(resource) : depthRows(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> This estimate reads current listings. Check the recurring high point on <a href="https://www.gw2bltc.com/" target="_blank" rel="noreferrer"><u>GW2BLTC</u></a> before trading if the item is volatile or the quote looks unusual.</span></div></section>`;
   document.querySelector('#back-home').addEventListener('click', () => { location.hash = 'home'; });
   document.querySelector('#download-csv').addEventListener('click', () => download(resource));
 }
