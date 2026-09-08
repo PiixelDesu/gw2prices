@@ -294,9 +294,10 @@ function depthRows(resource) {
   const quotedIndex = depths.indexOf(resource.depth);
   return depths.map((depth, index) => { const variance = 1 + ((index - quotedIndex) * .013); const buy = resource.value * .84 * variance; const sell = resource.value / .9 * variance; const trade = resource.value * variance; return `<tr class="${depth === resource.depth ? 'highlight' : ''}"><td class="mono">${depth.toLocaleString()}</td><td class="price">${gold(buy)}</td><td class="price">${gold(sell)}</td><td class="price">${gold(trade)}</td><td>${depth === resource.depth ? '<strong>quoted depth</strong>' : '—'}</td></tr>`; }).join('');
 }
-function weaponRows(resource) {
+function weaponRows(resource, searchTerm = '') {
   const percentage = resource.id === 'leg' ? 0.85 : 0.90;
-  return resource.weapons.map(weapon => {
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  return resource.weapons.filter(weapon => !normalizedSearch || `${weapon.name} ${weapon.itemId}`.toLowerCase().includes(normalizedSearch)).map(weapon => {
     const buy = weapon.buyPrice;
     const sell = weapon.sellPrice;
     const quote = sell ? sell * percentage : null;
@@ -312,6 +313,12 @@ function itemPage(resource) {
   const isWeapon = resource.category === 'Weapons';
   const headline = isWeapon ? `About ${resource.name.toLowerCase()}` : `${resource.name} price check`;
   app.innerHTML = `<section class="quote-page"><div class="breadcrumb"><a href="#home">PRICE CHECKS</a> / ${resource.name.toUpperCase()}</div><div class="quote-header"><div><p class="eyebrow">${resource.category} · market reference</p><h1>${headline}</h1><p class="timestamp">Data valid as of ${snapshot}</p></div><div class="action-row"><button class="btn" id="back-home">← Back</button><button class="btn primary" id="download-csv">↓ CSV</button></div></div><div class="quote-hero"><div><div class="quote-label">Recommended direct-trade quote</div><div class="quote-amount">${isWeapon ? resource.value + '%' : gold(resource.value)} <small>${isWeapon ? 'of lowest sell' : `per ${resource.unit}`}</small></div></div><div class="quote-meta"><strong>${isWeapon ? resource.weapons.length : resource.depth.toLocaleString()}</strong> ${isWeapon ? 'weapons' : 'listing depth'}<br>${isWeapon ? (resource.id === 'leg' ? '85% sell methodology' : '90% sell methodology') : '90% sell methodology'}</div></div><div class="info-strip"><div class="info-cell"><span>Trading Post buy</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value * .84)}</strong></div><div class="info-cell"><span>Trading Post sell</span><strong>${isWeapon ? 'per weapon below' : gold(resource.value / .9)}</strong></div><div class="info-cell"><span>Stack reference</span><strong>${isWeapon ? resource.note : resource.unit === 'set' ? '8 materials' : gold(resource.value * 250)}</strong></div></div><div class="section-heading"><div><p class="eyebrow">Order book snapshot</p><h2>${resource.name}</h2></div><span class="section-note">${isWeapon ? 'Each row is a separate live Trading Post item' : 'Buyers wait · sellers list · direct trade midpoint'}</span></div><div class="table-card"><table><thead><tr><th>${isWeapon ? 'Weapon' : 'Depth'}</th><th>100% buy price</th><th>100% sell price</th><th>${isWeapon && resource.id === 'leg' ? '85% direct trade' : '90% direct trade'}</th>${isWeapon ? '<th>90% direct trade</th>' : ''}<th>Signal</th></tr></thead><tbody>${isWeapon ? weaponRows(resource) : depthRows(resource)}</tbody></table></div><div class="callout"><span>◌</span><span><strong>Market note:</strong> This estimate reads current listings. Check the recurring high point on <a href="https://www.gw2bltc.com/" target="_blank" rel="noreferrer"><u>GW2BLTC</u></a> before trading if the item is volatile or the quote looks unusual.</span></div></section>`;
+  if (resource.id === 'leg') {
+    document.querySelector('.table-card').insertAdjacentHTML('beforebegin', '<label class="search-wrap weapon-search"><span class="search-icon">⌕</span><input id="legendary-search" type="search" placeholder="Search legendary weapons or item IDs" aria-label="Search legendary weapons or item IDs"></label>');
+    document.querySelector('#legendary-search').addEventListener('input', event => {
+      document.querySelector('.table-card tbody').innerHTML = weaponRows(resource, event.target.value);
+    });
+  }
   document.querySelector('#back-home').addEventListener('click', () => { location.hash = 'home'; });
   document.querySelector('#download-csv').addEventListener('click', () => download(resource));
 }

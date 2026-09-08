@@ -33,6 +33,7 @@ h1 { max-width: 700px; margin: 0; font-size: clamp(42px, 6vw, 76px); line-height
 .search-wrap { position: relative; margin-top: 19px; max-width: 550px; }
 .search-wrap input { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: white; padding: 16px 18px 16px 44px; color: var(--ink); outline: none; box-shadow: var(--shadow); }
 .search-wrap input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(21,111,108,.1); }
+.weapon-search { margin: 0 0 18px; max-width: 550px; }
 .planner-controls { display: flex; align-items: end; gap: 14px; margin: 32px 0 48px; padding: 20px; border: 1px solid var(--line); border-radius: 11px; background: white; box-shadow: var(--shadow); }
 .planner-controls label { font: 11px 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
 .planner-controls .search-wrap { margin: 0; width: 220px; }
